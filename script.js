@@ -4,6 +4,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let timerInterval;
     let seconds = 0;
 
+    // Gabarito carregado do arquivo gabarito.json
+    const gabarito = [1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 5, 4, 3, 2, 1, 5, 4, 3, 2, 1, 5, 4, 3, 2, 1, 5, 4, 3, 2, 1, 5, 4, 3, 2, 1];
+
     // Função para atualizar o cronômetro
     function updateTimer() {
         seconds++;
@@ -32,6 +35,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const table = document.getElementById(tableId);
         let fieldCount = 0;
 
+        if(tableId == 'group2') fieldCount = 25;
+
         for (let i = 0; i < 5; i++) {
             const row = document.createElement('tr');
             for (let j = 0; j < 5; j++) {
@@ -39,13 +44,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 const cell = document.createElement('td');
                 const input = document.createElement('input');
                 input.type = 'text';
-                input.id = 'campo' + tableId + "-" + String(fieldCount);
+                input.id = String(fieldCount);
                 input.maxLength = 1; // Apenas um dígito
                 input.classList.add('small-field');
 
                 // Adiciona evento para mover o foco e iniciar/parar o cronômetro
                 input.addEventListener('input', (event) => {
-                    handleInput(event, fieldCount, fieldCount === 25);
+                    handleInput(event, fieldCount, 50);
                 });
 
                 cell.appendChild(input);
@@ -59,14 +64,24 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleInput(event, fieldCount, isLastField) {
         const input = event.target;
 
+        const fieldNumber = parseInt(input.id, 10);
+
         // Iniciar o cronômetro ao digitar no primeiro campo
-        if (input.id == "campogroup1-1" && input.value.length === 1) {
+        if (fieldNumber == 1 && input.value.length === 1) {
             startTimer();
         }
 
         // Parar o cronômetro ao digitar no último campo
-        if (input.id == "campogroup2-25" && input.value.length === 1) {
+        if (fieldNumber == isLastField && input.value.length === 1) {
             stopTimer();
+        }
+
+        // Verificar se o valor está correto
+        const expectedValue = gabarito[fieldNumber - 1];
+        if (parseInt(input.value, 10) === expectedValue) {
+            input.style.border = '2px solid green'; // Valor correto
+        } else {
+            input.style.border = '2px solid red'; // Valor incorreto
         }
 
         // Avançar para o próximo campo automaticamente
@@ -79,10 +94,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Parar o cronômetro ao digitar no último campo
-        if (input.id == "campogroup1-25" && input.value.length === 1) {
-            const nextGroup2 = document.getElementById("campogroup2-1");
+        if (fieldNumber == 25 && input.value.length === 1) {
+            const nextGroup2 = document.getElementById("26");
             nextGroup2.focus();
         }
+
+        
     }
 
     // Criar os dois grupos de campos
